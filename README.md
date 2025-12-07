@@ -1,4 +1,4 @@
-# SecureAuth Pro - Next.js 15 Application
+# OTP Generator (TOTP, HOTP, Challenge Response OTP) Next.js 15 Application
 
 Professional multi-factor authentication system supporting TOTP, HOTP, and Challenge-Response OTP protocols. Built with Next.js 15, TypeScript, and Tailwind CSS.
 

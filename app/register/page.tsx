@@ -151,7 +151,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-lg">
         {/* Logo & Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-4">
@@ -199,6 +199,7 @@ export default function RegisterPage() {
                   type="text"
                   required
                   minLength={3}
+                  suppressHydrationWarning
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-700 bg-gray-800 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-white placeholder-gray-500"
@@ -218,6 +219,7 @@ export default function RegisterPage() {
                 <input
                   id="email"
                   type="email"
+                  suppressHydrationWarning
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-700 bg-gray-800 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-white placeholder-gray-500"
@@ -239,6 +241,7 @@ export default function RegisterPage() {
                   type="password"
                   required
                   minLength={8}
+                  suppressHydrationWarning
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-700 bg-gray-800 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-white placeholder-gray-500"
@@ -262,6 +265,7 @@ export default function RegisterPage() {
                   id="confirmPassword"
                   type="password"
                   required
+                  suppressHydrationWarning
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-700 bg-gray-800 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-white placeholder-gray-500"
@@ -276,6 +280,7 @@ export default function RegisterPage() {
               </label>
               <select
                 id="otpType"
+                suppressHydrationWarning
                 value={formData.otpType}
                 onChange={(e) => setFormData({ ...formData, otpType: e.target.value as 'totp' | 'hotp' | 'challenge-response' })}
                 className="block w-full py-3 px-4 border border-gray-700 bg-gray-800 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-white"

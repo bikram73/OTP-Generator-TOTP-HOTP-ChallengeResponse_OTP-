@@ -27,15 +27,9 @@ export async function POST(request: NextRequest) {
 
     const { username } = decoded;
     const challengeManager = new ChallengeManager();
-    
-    // Load challenges
-    await challengeManager.loadChallenges();
-    
+
     // Clear all challenges for the user
-    if (challengeManager.userChallenges && challengeManager.userChallenges[username]) {
-      challengeManager.userChallenges[username].challenges = [];
-      await challengeManager.saveChallenges();
-    }
+    await challengeManager.clearChallengesForUser(username);
 
     return NextResponse.json({
       success: true,

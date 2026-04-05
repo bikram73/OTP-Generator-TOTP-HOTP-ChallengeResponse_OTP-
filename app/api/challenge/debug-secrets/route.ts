@@ -39,7 +39,6 @@ export async function GET(request: NextRequest) {
     }
     
     // Get secret from ChallengeManager
-    await challengeManager.loadChallenges();
     let challengeSecret = 'N/A';
     try {
       challengeSecret = await challengeManager.initializeUser(username);

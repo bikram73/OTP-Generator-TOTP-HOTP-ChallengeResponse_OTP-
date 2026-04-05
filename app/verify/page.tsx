@@ -255,6 +255,7 @@ export default function VerifyPage() {
                 required
                 maxLength={6}
                 pattern="[0-9]{6}"
+                suppressHydrationWarning
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 className="block w-full px-4 py-4 text-center text-3xl font-mono tracking-widest border-2 border-gray-700 bg-gray-800 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-white placeholder-gray-500"

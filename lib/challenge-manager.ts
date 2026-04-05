@@ -3,82 +3,108 @@
  * Handles active challenges for users
  */
 
-import { promises as fs } from 'fs';
-import path from 'path';
 import { Challenge, ChallengeResponseOTP } from './otp/challenge-response';
+import { getSupabaseAdminClient } from './supabase-admin';
 
-interface UserChallenges {
-  [username: string]: {
-    challenges: Challenge[];
-    generator: ChallengeResponseOTP;
-  };
+interface ChallengeUserRow {
+  username: string;
+  secret: string;
+}
+
+interface ChallengeRow {
+  id: string;
+  username: string;
+  challenge: string;
+  context: string | null;
+  created_at: number;
+  expires_at: number;
+  used: boolean;
 }
 
 export class ChallengeManager {
   private challengesFile: string;
-  private userChallenges: UserChallenges = {};
 
-  constructor(challengesFile: string = 'challenges.json') {
-    this.challengesFile = path.join(process.cwd(), challengesFile);
+  constructor(challengesFile: string = 'supabase:otp_challenges') {
+    // Kept for backward compatibility with existing construction sites.
+    this.challengesFile = challengesFile;
+  }
+
+  private async getUserSecret(username: string): Promise<string | null> {
+    const supabase = getSupabaseAdminClient();
+    const { data, error } = await supabase
+      .from('otp_challenge_users')
+      .select('secret')
+      .eq('username', username)
+      .maybeSingle<ChallengeUserRow>();
+
+    if (error) {
+      throw error;
+    }
+
+    return data?.secret || null;
+  }
+
+  private rowToChallenge(row: ChallengeRow): Challenge {
+    return {
+      id: row.id,
+      challenge: row.challenge,
+      context: row.context || undefined,
+      createdAt: row.created_at,
+      expiresAt: row.expires_at,
+      used: row.used,
+    };
   }
 
   /**
-   * Load challenges from file
+   * Backward-compatible no-op for old callsites
    */
   async loadChallenges(): Promise<void> {
-    try {
-      const data = await fs.readFile(this.challengesFile, 'utf-8');
-      const savedData = JSON.parse(data);
-      
-      // Reconstruct ChallengeResponseOTP instances
-      for (const [username, userData] of Object.entries(savedData)) {
-        const { challenges, secret } = userData as any;
-        this.userChallenges[username] = {
-          challenges: challenges || [],
-          generator: new ChallengeResponseOTP(secret)
-        };
-      }
-    } catch (error: any) {
-      if (error.code === 'ENOENT') {
-        this.userChallenges = {};
-        await this.saveChallenges();
-      } else {
-        throw error;
-      }
-    }
+    return;
   }
 
   /**
-   * Save challenges to file
+   * Backward-compatible no-op for old callsites
    */
   async saveChallenges(): Promise<void> {
-    const saveData: any = {};
-    
-    for (const [username, userData] of Object.entries(this.userChallenges)) {
-      saveData[username] = {
-        challenges: userData.challenges,
-        secret: userData.generator.getSecret()
-      };
-    }
-    
-    await fs.writeFile(this.challengesFile, JSON.stringify(saveData, null, 2));
+    return;
   }
 
   /**
    * Initialize challenge-response for a user
    */
   async initializeUser(username: string, secret?: string): Promise<string> {
-    await this.loadChallenges();
-    
-    if (!this.userChallenges[username]) {
-      this.userChallenges[username] = {
-        challenges: [],
-        generator: new ChallengeResponseOTP(secret)
-      };
-      await this.saveChallenges();
+    const supabase = getSupabaseAdminClient();
+    const existingSecret = await this.getUserSecret(username);
+
+    if (!existingSecret) {
+      const resolvedSecret = secret || new ChallengeResponseOTP().getSecret();
+      const { error } = await supabase.from('otp_challenge_users').insert({
+        username,
+        secret: resolvedSecret,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      return resolvedSecret;
     }
-    
-    return this.userChallenges[username].generator.getSecret();
+
+    // Keep ChallengeManager secret aligned with user secret when provided.
+    if (secret && secret !== existingSecret) {
+      const { error } = await supabase
+        .from('otp_challenge_users')
+        .update({ secret })
+        .eq('username', username);
+
+      if (error) {
+        throw error;
+      }
+
+      return secret;
+    }
+
+    return existingSecret;
   }
 
   /**
@@ -88,29 +114,32 @@ export class ChallengeManager {
     username: string, 
     context?: string
   ): Promise<{ success: boolean; challenge?: Challenge; message?: string }> {
-    await this.loadChallenges();
-    
-    if (!this.userChallenges[username]) {
+    const secret = await this.getUserSecret(username);
+    if (!secret) {
       return { success: false, message: 'User not initialized for challenge-response' };
     }
 
     // Clean up expired challenges
     await this.cleanupExpiredChallenges(username);
-    
-    // Check if user has too many active challenges (DISABLED for testing)
-    // const activeChallenges = this.userChallenges[username].challenges.filter(
-    //   c => !c.used && Date.now() < c.expiresAt
-    // );
-    
-    // if (activeChallenges.length >= 3) {
-    //   return { success: false, message: 'Too many active challenges. Please complete or wait for expiration.' };
-    // }
 
     // Generate new challenge
-    const challenge = this.userChallenges[username].generator.generateChallenge(context);
-    this.userChallenges[username].challenges.push(challenge);
-    
-    await this.saveChallenges();
+    const generator = new ChallengeResponseOTP(secret);
+    const challenge = generator.generateChallenge(context);
+
+    const supabase = getSupabaseAdminClient();
+    const { error } = await supabase.from('otp_challenges').insert({
+      id: challenge.id,
+      username,
+      challenge: challenge.challenge,
+      context: challenge.context || null,
+      created_at: challenge.createdAt,
+      expires_at: challenge.expiresAt,
+      used: challenge.used,
+    });
+
+    if (error) {
+      return { success: false, message: `Failed to save challenge: ${error.message}` };
+    }
     
     return { success: true, challenge };
   }
@@ -125,22 +154,15 @@ export class ChallengeManager {
     challengeId: string, 
     response: string
   ): Promise<{ success: boolean; message: string }> {
-    await this.loadChallenges();
-    
-    if (!this.userChallenges[username]) {
+    const secret = await this.getUserSecret(username);
+    if (!secret) {
       return { success: false, message: 'User not found' };
     }
 
-    // Find the challenge
-    const challengeIndex = this.userChallenges[username].challenges.findIndex(
-      c => c.id === challengeId
-    );
-    
-    if (challengeIndex === -1) {
+    const challenge = await this.getChallenge(username, challengeId);
+    if (!challenge) {
       return { success: false, message: 'Challenge not found' };
     }
-
-    const challenge = this.userChallenges[username].challenges[challengeIndex];
     
     // Check if challenge is expired or used
     if (challenge.used) {
@@ -152,12 +174,22 @@ export class ChallengeManager {
     }
     
     // Verify the response
-    const isValid = this.userChallenges[username].generator.verifyResponse(challenge, response);
+    const generator = new ChallengeResponseOTP(secret);
+    const isValid = generator.verifyResponse(challenge, response);
     
     if (isValid) {
       // Mark challenge as used
-      this.userChallenges[username].challenges[challengeIndex].used = true;
-      await this.saveChallenges();
+      const supabase = getSupabaseAdminClient();
+      const { error } = await supabase
+        .from('otp_challenges')
+        .update({ used: true })
+        .eq('id', challengeId)
+        .eq('username', username);
+
+      if (error) {
+        return { success: false, message: `Failed to update challenge: ${error.message}` };
+      }
+
       return { success: true, message: 'Challenge verified successfully' };
     } else {
       return { success: false, message: 'Invalid response or challenge expired' };
@@ -168,50 +200,55 @@ export class ChallengeManager {
    * Get active challenges for a user
    */
   async getActiveChallenges(username: string): Promise<Challenge[]> {
-    await this.loadChallenges();
-    
-    if (!this.userChallenges[username]) {
-      return [];
+    await this.cleanupExpiredChallenges(username);
+
+    const supabase = getSupabaseAdminClient();
+    const { data, error } = await supabase
+      .from('otp_challenges')
+      .select('*')
+      .eq('username', username)
+      .eq('used', false)
+      .gt('expires_at', Date.now())
+      .returns<ChallengeRow[]>();
+
+    if (error) {
+      throw error;
     }
 
-    await this.cleanupExpiredChallenges(username);
-    
-    return this.userChallenges[username].challenges.filter(
-      c => !c.used && Date.now() < c.expiresAt
-    );
+    return (data || []).map((row: ChallengeRow) => this.rowToChallenge(row));
   }
 
   /**
    * Get challenge by ID
    */
   async getChallenge(username: string, challengeId: string): Promise<Challenge | null> {
-    await this.loadChallenges();
-    
-    if (!this.userChallenges[username]) {
-      return null;
+    const supabase = getSupabaseAdminClient();
+    const { data, error } = await supabase
+      .from('otp_challenges')
+      .select('*')
+      .eq('username', username)
+      .eq('id', challengeId)
+      .maybeSingle<ChallengeRow>();
+
+    if (error) {
+      throw error;
     }
 
-    return this.userChallenges[username].challenges.find(c => c.id === challengeId) || null;
+    return data ? this.rowToChallenge(data) : null;
   }
 
   /**
    * Mark challenge as used
    */
   async markChallengeAsUsed(username: string, challengeId: string): Promise<boolean> {
-    await this.loadChallenges();
-    
-    if (!this.userChallenges[username]) {
-      return false;
-    }
+    const supabase = getSupabaseAdminClient();
+    const { error } = await supabase
+      .from('otp_challenges')
+      .update({ used: true })
+      .eq('username', username)
+      .eq('id', challengeId);
 
-    const challenge = this.userChallenges[username].challenges.find(c => c.id === challengeId);
-    if (challenge) {
-      challenge.used = true;
-      await this.saveChallenges();
-      return true;
-    }
-    
-    return false;
+    return !error;
   }
 
   /**
@@ -231,44 +268,55 @@ export class ChallengeManager {
       return tempGenerator.generateChallengeQRData(challenge);
     }
 
-    if (!this.userChallenges[username]) {
+    const storedSecret = await this.getUserSecret(username);
+    if (!storedSecret) {
       return null;
     }
 
-    return this.userChallenges[username].generator.generateChallengeQRData(challenge);
+    return new ChallengeResponseOTP(storedSecret).generateChallengeQRData(challenge);
   }
 
   /**
    * Get provisioning URI for initial setup
    */
   async getProvisioningURI(username: string): Promise<string | null> {
-    await this.loadChallenges();
-    
-    if (!this.userChallenges[username]) {
+    const secret = await this.getUserSecret(username);
+    if (!secret) {
       return null;
     }
 
-    return this.userChallenges[username].generator.getProvisioningURI(username);
+    return new ChallengeResponseOTP(secret).getProvisioningURI(username);
+  }
+
+  /**
+   * Clear all challenges for a user
+   */
+  async clearChallengesForUser(username: string): Promise<void> {
+    const supabase = getSupabaseAdminClient();
+    const { error } = await supabase
+      .from('otp_challenges')
+      .delete()
+      .eq('username', username);
+
+    if (error) {
+      throw error;
+    }
   }
 
   /**
    * Clean up expired challenges
    */
   private async cleanupExpiredChallenges(username: string): Promise<void> {
-    if (!this.userChallenges[username]) {
-      return;
-    }
+    const supabase = getSupabaseAdminClient();
+    const { error } = await supabase
+      .from('otp_challenges')
+      .delete()
+      .eq('username', username)
+      .lt('expires_at', Date.now())
+      .eq('used', false);
 
-    const now = Date.now();
-    const originalLength = this.userChallenges[username].challenges.length;
-    
-    this.userChallenges[username].challenges = this.userChallenges[username].challenges.filter(
-      c => c.used || now < c.expiresAt
-    );
-    
-    // Save if we removed any challenges
-    if (this.userChallenges[username].challenges.length !== originalLength) {
-      await this.saveChallenges();
+    if (error) {
+      throw error;
     }
   }
 }

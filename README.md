@@ -2,6 +2,65 @@
 
 Professional multi-factor authentication system supporting TOTP, HOTP, and Challenge-Response OTP protocols. Built with Next.js 15, TypeScript, and Tailwind CSS.
 
+## ✨ Overview
+
+This project is a full authentication demo and learning platform for OTP-based security. It includes user registration, login, JWT-based sessions, QR code generation, OTP verification, and a challenge-response flow for higher-security use cases.
+
+## 🧩 What's Included
+
+- 🔐 JWT authentication with HTTP-only cookies
+- 🧑‍💻 User registration and login flows
+- ⏱️ TOTP generation and verification
+- 🔢 HOTP generation and verification
+- 🧪 Challenge-response OTP workflows
+- 📷 QR code generation for authenticator apps
+- 🗃️ Supabase Postgres user and challenge data management
+- 🎨 Tailwind-based UI pages and layouts
+- 🧱 Reusable UI components for visual polish
+- 🛡️ Secret encryption and password hashing utilities
+
+## 📱 Main Pages
+
+- `/` - Home / landing page
+- `/login` - Login screen
+- `/register` - Registration screen
+- `/dashboard` - User dashboard after authentication
+- `/verify` - OTP verification page
+- `/challenge` - Challenge-response authentication page
+- `/about` - Project and OTP comparison page
+- `/qrcode` - QR code display page
+- `/dashboard/settings` - User settings page
+
+## 🛠️ Core Capabilities
+
+### 🔑 Authentication
+
+- JWT token creation and verification
+- Secure cookie-based session handling
+- Login flow for password-based access
+- Auth checks for protected pages and API routes
+
+### ⏳ OTP Support
+
+- TOTP for time-based one-time passwords
+- HOTP for counter-based one-time passwords
+- Challenge-response OTP for transaction-level validation
+- Secret generation and verification helpers
+
+### 🧰 Security Utilities
+
+- Password hashing with bcrypt
+- Secret storage encryption helpers
+- Token validation helpers
+- Challenge lifecycle management
+
+### 🎯 User Experience
+
+- QR code generation for authenticator apps
+- Animated and reusable UI components
+- Responsive layout built with Tailwind CSS
+- Dedicated pages for learning and testing OTP flows
+
 ## 🚀 Quick Start
 
 ### Installation
@@ -43,14 +102,16 @@ npm start
 │   ├── register/         # Registration page
 │   ├── verify/           # OTP verification page
 │   ├── challenge/        # Challenge-Response page
-│   ├── challenge-guide/  # Challenge-Response guide
 │   ├── about/            # About page with OTP comparisons
 │   └── qrcode/           # QR code display
 ├── lib/
 │   ├── otp/              # TOTP/HOTP/Challenge-Response implementations
 │   ├── security.ts       # Security utilities
 │   ├── user-manager.ts   # User management
-│   └── challenge-manager.ts # Challenge lifecycle management
+│   ├── challenge-manager.ts # Challenge lifecycle management
+│   └── supabase-admin.ts # Supabase server client
+├── components/
+│   └── ui/               # Reusable visual components
 └── package.json
 ```
 
@@ -176,6 +237,9 @@ Response:
 - **bcryptjs** - Password hashing
 - **jsonwebtoken** - JWT authentication
 - **qrcode** - QR code generation
+- **framer-motion** - Motion and animations
+- **lucide-react** - Icons
+- **zod** - Schema validation
 
 ## 📝 Environment Variables
 
@@ -186,13 +250,45 @@ JWT_SECRET=your-secret-key-here
 NODE_ENV=development
 ```
 
+### 🔒 Important Note
+
+- Replace `JWT_SECRET` with a long, random value before using the app in production.
+- Keep the same secret across restarts if you want existing login tokens to remain valid.
+- Do not commit `.env.local` to source control.
+
 ## 🎯 API Endpoints
+
+### Authentication
 
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - User login
+
+### OTP
+
 - `GET /api/otp/generate` - Generate OTP code
+- `GET /api/otp/generate-next` - Generate the next OTP code
 - `POST /api/otp/verify` - Verify OTP code
+
+### QR Code
+
 - `GET /api/qrcode` - Get QR code for mobile app
+
+### Challenge Flow
+
+- `GET /api/challenge/active` - View active challenge data
+- `POST /api/challenge/generate` - Create a new challenge
+- `POST /api/challenge/generate-response` - Generate a challenge response
+- `POST /api/challenge/verify` - Verify a challenge response
+- `POST /api/challenge/verify-fixed` - Verify using a fixed challenge flow
+- `GET /api/challenge/qrcode` - Get a QR code for a challenge
+- `POST /api/challenge/quick-solve` - Quick challenge solving helper
+- `POST /api/challenge/clear-all` - Clear stored challenges
+
+### User Data
+
+- `GET /api/user/info` - Get authenticated user information
+- `GET /api/user/secret` - Access user secret data
+- `POST /api/user/convert-to-totp` - Convert a user to TOTP flow
 
 ## 🔒 Security Features
 
@@ -200,6 +296,8 @@ NODE_ENV=development
 - HTTP-only cookies
 - Password strength validation
 - Encrypted secret storage
+- Session-based OTP access flow
+- Challenge replay prevention
 - Rate limiting (to be implemented)
 
 ## 📱 Mobile Authenticator Support
@@ -210,4 +308,11 @@ Compatible with:
 - Authy
 - LastPass Authenticator
 - Any TOTP/HOTP compatible app
+
+## 🧪 Helpful Scripts
+
+- `npm run dev` - Start the development server
+- `npm run build` - Build the production app
+- `npm start` - Run the production build
+- `npm run install-deps` - Install dependencies with legacy peer dependency support
 

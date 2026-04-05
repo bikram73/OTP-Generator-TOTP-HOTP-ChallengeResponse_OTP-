@@ -28,12 +28,6 @@ export default function Home() {
                 About
               </Link>
               <Link
-                href="/challenge-guide"
-                className="text-gray-400 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
-              >
-                Challenge Guide
-              </Link>
-              <Link
                 href="/login"
                 className="text-gray-400 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
               >

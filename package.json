@@ -10,6 +10,7 @@
     "install-deps": "npm install --legacy-peer-deps"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
     "@radix-ui/react-slot": "^1.0.2",
     "bcryptjs": "^2.4.3",
     "canvas-confetti": "^1.9.3",

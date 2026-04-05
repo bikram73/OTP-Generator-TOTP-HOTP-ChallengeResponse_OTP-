@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { UserManager } from '@/lib/user-manager';
+import { TOTPGenerator } from '@/lib/otp/totp';
+import { HOTPGenerator } from '@/lib/otp/hotp';
 import jwt from 'jsonwebtoken';
-import { promises as fs } from 'fs';
-import path from 'path';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (user.otpType === 'totp') {
+    if (user.otpType === 'totp' && result.generator instanceof TOTPGenerator) {
       const otp = result.generator.generateOTP();
       const remaining = result.generator.getRemainingTime();
       return NextResponse.json({
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
         remaining,
         type: 'totp',
       });
-    } else {
+    } else if (user.otpType === 'hotp' && result.generator instanceof HOTPGenerator) {
       // For HOTP, just show current code without incrementing
       const otp = result.generator.getCurrentOTP();
       const counter = result.generator.getCurrentCounter();
@@ -66,6 +66,11 @@ export async function GET(request: NextRequest) {
         counter,
         type: 'hotp',
       });
+    } else {
+      return NextResponse.json(
+        { success: false, message: 'Unsupported OTP generator type' },
+        { status: 400 }
+      );
     }
   } catch (error) {
     console.error('Generate OTP error:', error);

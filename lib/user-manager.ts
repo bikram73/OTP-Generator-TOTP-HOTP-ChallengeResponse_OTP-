@@ -2,12 +2,11 @@
  * User Management System
  */
 
-import { promises as fs } from 'fs';
-import path from 'path';
 import { SecurityManager } from './security';
 import { TOTPGenerator } from './otp/totp';
 import { HOTPGenerator } from './otp/hotp';
 import { ChallengeResponseOTP } from './otp/challenge-response';
+import { getSupabaseAdminClient } from './supabase-admin';
 
 interface User {
   username: string;
@@ -31,51 +30,132 @@ interface UserData {
   backupCodes: string[];
 }
 
+interface DbUserRow {
+  username: string;
+  email: string | null;
+  password_hash: string;
+  otp_type: 'totp' | 'hotp' | 'challenge-response';
+  otp_secret_encrypted: string;
+  encryption_salt: string;
+  counter: number | null;
+  backup_codes: Array<{ hash: string; used: boolean }> | null;
+  created_at: number;
+  locked: boolean;
+  used_totp_codes: Array<{ code: string; timeStep: number; usedAt: number }> | null;
+}
+
 export class UserManager {
   public dbFile: string;
   private security: SecurityManager;
   public users: Record<string, User> = {};
 
-  constructor(dbFile: string = 'users.json') {
-    this.dbFile = path.join(process.cwd(), dbFile);
+  constructor(dbFile: string = 'supabase:otp_users') {
+    // Kept for backward compatibility with existing construction sites.
+    this.dbFile = dbFile;
     this.security = new SecurityManager();
   }
 
+  private rowToUser(row: DbUserRow): User {
+    return {
+      username: row.username,
+      email: row.email || undefined,
+      passwordHash: row.password_hash,
+      otpType: row.otp_type,
+      otpSecretEncrypted: row.otp_secret_encrypted,
+      encryptionSalt: row.encryption_salt,
+      counter: row.counter ?? undefined,
+      backupCodes: row.backup_codes || [],
+      createdAt: row.created_at,
+      locked: row.locked,
+      usedTotpCodes: row.used_totp_codes || [],
+    };
+  }
+
+  private userToDbRow(user: User) {
+    return {
+      username: user.username,
+      email: user.email || null,
+      password_hash: user.passwordHash,
+      otp_type: user.otpType,
+      otp_secret_encrypted: user.otpSecretEncrypted,
+      encryption_salt: user.encryptionSalt,
+      counter: user.counter ?? null,
+      backup_codes: user.backupCodes,
+      created_at: user.createdAt,
+      locked: user.locked,
+      used_totp_codes: user.usedTotpCodes,
+    };
+  }
+
+  private async getUserByUsername(username: string): Promise<User | null> {
+    const supabase = getSupabaseAdminClient();
+    const { data, error } = await supabase
+      .from('otp_users')
+      .select('*')
+      .eq('username', username)
+      .maybeSingle<DbUserRow>();
+
+    if (error) {
+      throw error;
+    }
+
+    return data ? this.rowToUser(data) : null;
+  }
+
+  private async getUserByEmail(email: string): Promise<User | null> {
+    const supabase = getSupabaseAdminClient();
+    const { data, error } = await supabase
+      .from('otp_users')
+      .select('*')
+      .ilike('email', email)
+      .maybeSingle<DbUserRow>();
+
+    if (error) {
+      throw error;
+    }
+
+    return data ? this.rowToUser(data) : null;
+  }
+
   /**
-   * Load users from database file
+   * Load users from Supabase into in-memory cache
    */
   async loadUsers(): Promise<void> {
-    try {
-      const data = await fs.readFile(this.dbFile, 'utf-8');
-      this.users = JSON.parse(data);
+    const supabase = getSupabaseAdminClient();
+    const { data, error } = await supabase
+      .from('otp_users')
+      .select('*')
+      .returns<DbUserRow[]>();
 
-      // Migrate existing users to add usedTotpCodes field if missing
-      let needsSave = false;
-      for (const username in this.users) {
-        if (!this.users[username].usedTotpCodes) {
-          this.users[username].usedTotpCodes = [];
-          needsSave = true;
-        }
-      }
+    if (error) {
+      throw error;
+    }
 
-      if (needsSave) {
-        await this.saveUsers();
-      }
-    } catch (error: any) {
-      if (error.code === 'ENOENT') {
-        this.users = {};
-        await this.saveUsers();
-      } else {
-        throw error;
-      }
+    this.users = {};
+    for (const row of data || []) {
+      const user = this.rowToUser(row);
+      this.users[user.username] = user;
     }
   }
 
   /**
-   * Save users to database file
+   * Save in-memory cache to Supabase
    */
   public async saveUsers(): Promise<void> {
-    await fs.writeFile(this.dbFile, JSON.stringify(this.users, null, 2));
+    const supabase = getSupabaseAdminClient();
+    const rows = Object.values(this.users).map((user) => this.userToDbRow(user));
+
+    if (rows.length === 0) {
+      return;
+    }
+
+    const { error } = await supabase.from('otp_users').upsert(rows, {
+      onConflict: 'username',
+    });
+
+    if (error) {
+      throw error;
+    }
   }
 
   /**
@@ -87,11 +167,16 @@ export class UserManager {
     otpType: 'totp' | 'hotp' | 'challenge-response' = 'totp',
     email?: string
   ): Promise<{ success: boolean; message: string; userData?: UserData }> {
-    await this.loadUsers();
-
-    // Validate username
-    if (this.users[username]) {
+    const existingByUsername = await this.getUserByUsername(username);
+    if (existingByUsername) {
       return { success: false, message: 'Username already exists' };
+    }
+
+    if (email) {
+      const existingByEmail = await this.getUserByEmail(email);
+      if (existingByEmail) {
+        return { success: false, message: 'Email already exists' };
+      }
     }
 
     if (!username || username.length < 3) {
@@ -139,7 +224,7 @@ export class UserManager {
     );
 
     // Create user record
-    this.users[username] = {
+    const user: User = {
       username,
       email,
       passwordHash,
@@ -153,7 +238,11 @@ export class UserManager {
       usedTotpCodes: [],
     };
 
-    await this.saveUsers();
+    const supabase = getSupabaseAdminClient();
+    const { error } = await supabase.from('otp_users').insert(this.userToDbRow(user));
+    if (error) {
+      return { success: false, message: `Failed to store user: ${error.message}` };
+    }
 
     return {
       success: true,
@@ -170,17 +259,15 @@ export class UserManager {
   /**
    * Find user by username or email
    */
-  private findUserByUsernameOrEmail(identifier: string): { username: string; user: User } | null {
-    // First try to find by username (exact match)
-    if (this.users[identifier]) {
-      return { username: identifier, user: this.users[identifier] };
+  private async findUserByUsernameOrEmail(identifier: string): Promise<{ username: string; user: User } | null> {
+    const usernameUser = await this.getUserByUsername(identifier);
+    if (usernameUser) {
+      return { username: usernameUser.username, user: usernameUser };
     }
 
-    // Then try to find by email
-    for (const [username, user] of Object.entries(this.users)) {
-      if (user.email && user.email.toLowerCase() === identifier.toLowerCase()) {
-        return { username, user };
-      }
+    const emailUser = await this.getUserByEmail(identifier);
+    if (emailUser) {
+      return { username: emailUser.username, user: emailUser };
     }
 
     return null;
@@ -193,9 +280,7 @@ export class UserManager {
     identifier: string, // Can be username or email
     password: string
   ): Promise<{ success: boolean; message: string; username?: string }> {
-    await this.loadUsers();
-
-    const userInfo = this.findUserByUsernameOrEmail(identifier);
+    const userInfo = await this.findUserByUsernameOrEmail(identifier);
     if (!userInfo) {
       return { success: false, message: 'Invalid credentials' };
     }
@@ -235,8 +320,6 @@ export class UserManager {
     identifier: string, // Can be username or email
     password: string
   ): Promise<{ success: boolean; generator?: TOTPGenerator | HOTPGenerator | ChallengeResponseOTP; message?: string }> {
-    await this.loadUsers();
-
     // Authenticate user
     const auth = await this.authenticateUser(identifier, password);
     if (!auth.success || !auth.username) {
@@ -244,7 +327,10 @@ export class UserManager {
     }
 
     const username = auth.username;
-    const user = this.users[username];
+    const user = await this.getUserByUsername(username);
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
 
     // Decrypt OTP secret
     try {
@@ -273,9 +359,7 @@ export class UserManager {
    * Get decrypted secret key for a user
    */
   async getDecryptedSecret(username: string, password: string): Promise<string | null> {
-    await this.loadUsers();
-
-    const user = this.users[username];
+    const user = await this.getUserByUsername(username);
     if (!user) {
       return null;
     }
@@ -302,8 +386,6 @@ export class UserManager {
     password: string,
     otpCode: string
   ): Promise<{ success: boolean; message: string }> {
-    await this.loadUsers();
-
     // Get the actual username from authentication
     const auth = await this.authenticateUser(identifier, password);
     if (!auth.success || !auth.username) {
@@ -311,7 +393,10 @@ export class UserManager {
     }
 
     const username = auth.username;
-    const user = this.users[username];
+    const user = await this.getUserByUsername(username);
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
 
     // Reject Challenge-Response users
     if (user.otpType === 'challenge-response') {
@@ -355,7 +440,17 @@ export class UserManager {
           timeStep: currentTimeStep,
           usedAt: now
         });
-        await this.saveUsers();
+
+        const supabase = getSupabaseAdminClient();
+        const { error } = await supabase
+          .from('otp_users')
+          .update({ used_totp_codes: user.usedTotpCodes })
+          .eq('username', username);
+
+        if (error) {
+          return { success: false, message: `Failed to update TOTP usage: ${error.message}` };
+        }
+
         return { success: true, message: 'OTP verified successfully' };
       } else {
         return { success: false, message: 'Invalid or expired OTP code' };
@@ -388,13 +483,10 @@ export class UserManager {
     username: string,
     backupCode: string
   ): Promise<{ success: boolean; message: string }> {
-    await this.loadUsers();
-
-    if (!this.users[username]) {
+    const user = await this.getUserByUsername(username);
+    if (!user) {
       return { success: false, message: 'Invalid username' };
     }
-
-    const user = this.users[username];
 
     for (const backupData of user.backupCodes) {
       if (backupData.used) continue;
@@ -402,7 +494,17 @@ export class UserManager {
       const isValid = await this.security.verifyPassword(backupCode, backupData.hash);
       if (isValid) {
         backupData.used = true;
-        await this.saveUsers();
+
+        const supabase = getSupabaseAdminClient();
+        const { error } = await supabase
+          .from('otp_users')
+          .update({ backup_codes: user.backupCodes })
+          .eq('username', username);
+
+        if (error) {
+          return { success: false, message: `Failed to update backup code usage: ${error.message}` };
+        }
+
         return { success: true, message: 'Backup code verified successfully' };
       }
     }
@@ -414,26 +516,31 @@ export class UserManager {
    * Get user info
    */
   async getUserInfo(username: string): Promise<User | null> {
-    await this.loadUsers();
-    return this.users[username] || null;
+    return this.getUserByUsername(username);
   }
 
   /**
    * Update HOTP counter for user
    */
   async updateHOTPCounter(username: string, newCounter: number): Promise<{ success: boolean; message: string }> {
-    await this.loadUsers();
-
-    if (!this.users[username]) {
+    const user = await this.getUserByUsername(username);
+    if (!user) {
       return { success: false, message: 'User not found' };
     }
 
-    if (this.users[username].otpType !== 'hotp') {
+    if (user.otpType !== 'hotp') {
       return { success: false, message: 'User is not using HOTP' };
     }
 
-    this.users[username].counter = newCounter;
-    await this.saveUsers();
+    const supabase = getSupabaseAdminClient();
+    const { error } = await supabase
+      .from('otp_users')
+      .update({ counter: newCounter })
+      .eq('username', username);
+
+    if (error) {
+      return { success: false, message: `Failed to update counter: ${error.message}` };
+    }
 
     return { success: true, message: 'HOTP counter updated successfully' };
   }
@@ -442,22 +549,28 @@ export class UserManager {
    * Convert HOTP user to TOTP (for better app compatibility)
    */
   async convertToTOTP(username: string): Promise<{ success: boolean; message: string }> {
-    await this.loadUsers();
-
-    if (!this.users[username]) {
+    const user = await this.getUserByUsername(username);
+    if (!user) {
       return { success: false, message: 'User not found' };
     }
 
-    if (this.users[username].otpType !== 'hotp') {
+    if (user.otpType !== 'hotp') {
       return { success: false, message: 'User is not using HOTP' };
     }
 
-    // Convert to TOTP
-    this.users[username].otpType = 'totp';
-    delete this.users[username].counter; // Remove counter field
-    this.users[username].usedTotpCodes = []; // Initialize TOTP tracking
+    const supabase = getSupabaseAdminClient();
+    const { error } = await supabase
+      .from('otp_users')
+      .update({
+        otp_type: 'totp',
+        counter: null,
+        used_totp_codes: [],
+      })
+      .eq('username', username);
 
-    await this.saveUsers();
+    if (error) {
+      return { success: false, message: `Failed to convert user: ${error.message}` };
+    }
 
     return { success: true, message: 'Successfully converted to TOTP' };
   }
@@ -466,8 +579,14 @@ export class UserManager {
    * List all users
    */
   async listUsers(): Promise<string[]> {
-    await this.loadUsers();
-    return Object.keys(this.users);
+    const supabase = getSupabaseAdminClient();
+    const { data, error } = await supabase.from('otp_users').select('username');
+
+    if (error) {
+      throw error;
+    }
+
+    return (data || []).map((row: { username: string }) => row.username);
   }
 }
 

@@ -9,6 +9,7 @@ export interface ShimmerButtonProps extends ComponentPropsWithoutRef<"button"> {
   borderRadius?: string
   shimmerDuration?: string
   background?: string
+  href?: string
   className?: string
   children?: React.ReactNode
   asChild?: boolean
@@ -39,6 +40,7 @@ export const ShimmerButton = React.forwardRef<
     return (
       <Comp
         href={href}
+        suppressHydrationWarning
         style={
           {
             "--spread": "90deg",

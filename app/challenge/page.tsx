@@ -383,6 +383,7 @@ export default function ChallengePage() {
                     <div className="space-y-4">
                       <input
                         type="text"
+                        suppressHydrationWarning
                         value={response}
                         onChange={(e) => setResponse(e.target.value)}
                         placeholder="Enter 6-digit response"

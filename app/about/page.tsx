@@ -125,12 +125,6 @@ export default function AboutPage() {
               >
                 Home
               </Link>
-              <Link
-                href="/challenge-guide"
-                className="text-gray-400 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
-              >
-                Challenge Guide
-              </Link>
               <ShimmerButton
                 href="/register"
                 background="rgba(220, 38, 38, 1)"
@@ -862,10 +856,12 @@ export default function AboutPage() {
 
         {/* CTA Section */}
         <section className="text-center relative z-10">
-          <div className="bg-gray-50 rounded-2xl p-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Ready to Get Started?</h2>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Create your account and start using secure OTP authentication today
+          <div className="bg-gradient-to-br from-gray-900 to-slate-900 rounded-2xl p-12 border border-gray-800 shadow-2xl">
+            <h2 className="text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-red-600">
+              Ready to Get Started?
+            </h2>
+            <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
+              Create your account and start using <span className="font-semibold text-red-400">secure OTP authentication</span> today
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
               <ShimmerButton
@@ -880,7 +876,7 @@ export default function AboutPage() {
               </ShimmerButton>
               <Link
                 href="/login"
-                className="bg-white text-gray-900 px-8 py-3 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors font-medium shadow-sm"
+                className="bg-gray-800 text-blue-300 px-8 py-3 rounded-lg border border-gray-700 hover:bg-gray-700 hover:text-blue-200 transition-colors font-medium shadow-sm"
               >
                 Sign In
               </Link>

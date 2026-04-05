@@ -187,8 +187,7 @@ export class ChallengeResponseOTP {
           encoding: 'base32',
           algorithm: 'sha256',
           digits: this.digits,
-          step: currentTimeStep,
-          window: 0
+          step: currentTimeStep
         });
         
         if (totpCode === targetCode) {

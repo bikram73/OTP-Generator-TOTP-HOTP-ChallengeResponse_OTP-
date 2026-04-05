@@ -154,7 +154,7 @@ export function TypingAnimation({
 
   return (
     <MotionComponent
-      ref={elementRef}
+      ref={elementRef as unknown as React.Ref<HTMLDivElement>}
       className={cn("leading-[5rem] tracking-[-0.02em]", className)}
       {...props}
     >

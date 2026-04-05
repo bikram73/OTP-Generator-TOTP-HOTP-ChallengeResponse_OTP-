@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     // Verify token
     const decoded = jwt.verify(token, JWT_SECRET) as { username: string; password: string }
     const userManager = new UserManager()
-    const user = await userManager.getUser(decoded.username)
+    const user = await userManager.getUserInfo(decoded.username)
 
     if (!user) {
       return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 })

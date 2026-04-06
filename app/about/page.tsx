@@ -111,17 +111,17 @@ export default function AboutPage() {
       {/* Navigation */}
       <nav className="border-b border-gray-800 bg-black/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap justify-between items-center gap-3 py-3 sm:h-16 sm:py-0">
+          <div className="flex justify-between items-center gap-2 py-3 sm:h-16 sm:py-0">
             <Link href="/" className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center">
                 <Shield className="w-5 h-5 text-white" />
               </div>
               <span className="text-base sm:text-xl font-semibold text-white">SecureAuth Pro</span>
             </Link>
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="ml-auto flex items-center gap-1 sm:gap-4">
               <Link
                 href="/"
-                className="text-gray-400 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+                className="text-gray-400 hover:text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
               >
                 Home
               </Link>
@@ -130,9 +130,9 @@ export default function AboutPage() {
                 background="rgba(220, 38, 38, 1)"
                 shimmerColor="#dc2626"
                 shimmerDuration="3s"
-                className="px-4 py-2 text-sm"
+                className="px-3 sm:px-4 py-2 text-sm"
               >
-                Get Started
+                Get started
                 <ArrowRight className="w-4 h-4 ml-2" />
               </ShimmerButton>
             </div>

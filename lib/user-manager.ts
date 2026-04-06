@@ -30,6 +30,12 @@ interface UserData {
   backupCodes: string[];
 }
 
+interface UserProfileUpdates {
+  username?: string;
+  email?: string;
+  password?: string;
+}
+
 interface DbUserRow {
   username: string;
   email: string | null;
@@ -573,6 +579,127 @@ export class UserManager {
     }
 
     return { success: true, message: 'Successfully converted to TOTP' };
+  }
+
+  /**
+   * Update account profile fields (username, email, password)
+   */
+  async updateUserProfile(
+    currentIdentifier: string,
+    currentPassword: string,
+    updates: UserProfileUpdates
+  ): Promise<{ success: boolean; message: string; updatedUser?: User }> {
+    const auth = await this.authenticateUser(currentIdentifier, currentPassword);
+    if (!auth.success || !auth.username) {
+      return { success: false, message: 'Authentication failed' };
+    }
+
+    const currentUsername = auth.username;
+    const user = await this.getUserByUsername(currentUsername);
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+
+    const nextUsername = updates.username?.trim() || user.username;
+    const nextEmail = updates.email !== undefined ? updates.email.trim().toLowerCase() : (user.email || '');
+    const nextPassword = updates.password?.trim();
+
+    if (!nextUsername || nextUsername.length < 3) {
+      return { success: false, message: 'Username must be at least 3 characters' };
+    }
+
+    if (nextUsername !== user.username) {
+      const existingByUsername = await this.getUserByUsername(nextUsername);
+      if (existingByUsername) {
+        return { success: false, message: 'Username already exists' };
+      }
+    }
+
+    if (nextEmail) {
+      const existingByEmail = await this.getUserByEmail(nextEmail);
+      if (existingByEmail && existingByEmail.username !== user.username) {
+        return { success: false, message: 'Email already exists' };
+      }
+    }
+
+    const updatesForDb: Record<string, unknown> = {};
+
+    if (nextUsername !== user.username) {
+      updatesForDb.username = nextUsername;
+    }
+
+    const currentEmail = (user.email || '').toLowerCase();
+    if (nextEmail !== currentEmail) {
+      updatesForDb.email = nextEmail || null;
+    }
+
+    if (nextPassword) {
+      const passwordValidation = this.security.validatePasswordStrength(nextPassword);
+      if (!passwordValidation.isValid) {
+        return { success: false, message: passwordValidation.message };
+      }
+
+      const oldKey = this.security.generateEncryptionKey(
+        currentPassword,
+        Buffer.from(user.encryptionSalt, 'hex')
+      ).key;
+      const decryptedSecret = this.security.decryptData(user.otpSecretEncrypted, oldKey);
+
+      if (!decryptedSecret) {
+        return { success: false, message: 'Failed to process password change' };
+      }
+
+      const { key: newEncryptionKey, salt: newSalt } = this.security.generateEncryptionKey(nextPassword);
+      const reEncryptedSecret = this.security.encryptData(decryptedSecret, newEncryptionKey);
+      const newPasswordHash = await this.security.hashPassword(nextPassword);
+
+      updatesForDb.password_hash = newPasswordHash;
+      updatesForDb.otp_secret_encrypted = reEncryptedSecret;
+      updatesForDb.encryption_salt = newSalt.toString('hex');
+    }
+
+    if (Object.keys(updatesForDb).length === 0) {
+      return { success: true, message: 'No changes detected', updatedUser: user };
+    }
+
+    const supabase = getSupabaseAdminClient();
+    const { error } = await supabase
+      .from('otp_users')
+      .update(updatesForDb)
+      .eq('username', currentUsername);
+
+    if (error) {
+      return { success: false, message: `Failed to update account: ${error.message}` };
+    }
+
+    const refreshedUser = await this.getUserByUsername(nextUsername);
+    if (!refreshedUser) {
+      return { success: false, message: 'Updated user could not be loaded' };
+    }
+
+    return { success: true, message: 'Account updated successfully', updatedUser: refreshedUser };
+  }
+
+  /**
+   * Delete a user account
+   */
+  async deleteUserAccount(identifier: string, password: string): Promise<{ success: boolean; message: string }> {
+    const auth = await this.authenticateUser(identifier, password);
+    if (!auth.success || !auth.username) {
+      return { success: false, message: 'Authentication failed' };
+    }
+
+    const supabase = getSupabaseAdminClient();
+    const { error } = await supabase
+      .from('otp_users')
+      .delete()
+      .eq('username', auth.username);
+
+    if (error) {
+      return { success: false, message: `Failed to delete account: ${error.message}` };
+    }
+
+    return { success: true, message: 'Account deleted successfully' };
   }
 
   /**

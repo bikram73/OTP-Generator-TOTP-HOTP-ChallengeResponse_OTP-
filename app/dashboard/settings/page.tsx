@@ -195,6 +195,28 @@ export default function SettingsPage() {
           <p className="text-gray-400">Manage your account information and OTP preferences</p>
         </div>
 
+        {(error || successMessage) && (
+          <div className="mb-6 space-y-3">
+            {error && userInfo && (
+              <div className="p-4 bg-red-900/20 border border-red-800 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-400" />
+                  <span className="text-sm text-red-300">{error}</span>
+                </div>
+              </div>
+            )}
+
+            {successMessage && (
+              <div className="p-4 bg-green-900/20 border border-green-800 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-400" />
+                  <span className="text-sm text-green-300">{successMessage}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {userInfo && (
           <div className="space-y-6">
             {/* User Information Card */}
@@ -482,23 +504,6 @@ export default function SettingsPage() {
           </div>
         )}
 
-        {error && userInfo && (
-          <div className="mt-6 p-4 bg-red-900/20 border border-red-800 rounded-lg">
-            <div className="flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-red-400" />
-              <span className="text-sm text-red-300">{error}</span>
-            </div>
-          </div>
-        )}
-
-        {successMessage && (
-          <div className="mt-6 p-4 bg-green-900/20 border border-green-800 rounded-lg">
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-green-400" />
-              <span className="text-sm text-green-300">{successMessage}</span>
-            </div>
-          </div>
-        )}
       </div>
 
       {showDeleteModal && (

@@ -74,12 +74,12 @@ export default function SettingsPage() {
       {/* Navigation */}
       <nav className="bg-gray-900 border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex flex-wrap justify-between items-center gap-3 py-3 sm:h-16 sm:py-0">
             <Link href="/" className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center">
                 <Shield className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-semibold text-white">SecureAuth Pro</span>
+              <span className="text-base sm:text-xl font-semibold text-white">SecureAuth Pro</span>
             </Link>
             <Link
               href="/dashboard"
@@ -92,9 +92,9 @@ export default function SettingsPage() {
         </div>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Account Settings</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Account Settings</h1>
           <p className="text-gray-400">Manage your account information and OTP preferences</p>
         </div>
 
@@ -103,14 +103,14 @@ export default function SettingsPage() {
             {/* User Information Card */}
             <div className="relative">
               <MagicCard
-                className="p-8"
+                className="p-4 sm:p-8"
                 gradientSize={400}
                 gradientFrom="#dc2626"
                 gradientTo="#b91c1c"
                 gradientColor="#7f1d1d"
                 gradientOpacity={0.2}
               >
-                <div className="bg-gray-900 rounded-xl p-8 relative z-10 border border-gray-800">
+                <div className="bg-gray-900 rounded-xl p-5 sm:p-8 relative z-10 border border-gray-800">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-12 h-12 bg-blue-900/50 rounded-lg flex items-center justify-center">
                       <User className="w-6 h-6 text-blue-400" />
@@ -122,7 +122,7 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-700">
+                    <div className="flex items-center p-4 bg-gray-800 rounded-lg border border-gray-700">
                       <div className="flex items-center gap-3">
                         <User className="w-5 h-5 text-gray-400" />
                         <div>
@@ -198,8 +198,8 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <div className={`p-6 bg-gradient-to-br ${userInfo.otpType === 'totp' ? 'from-blue-900/30 to-blue-800/20 border-blue-800' : 'from-purple-900/30 to-purple-800/20 border-purple-800'} border rounded-xl`}>
-                      <div className="flex items-center justify-between mb-4">
+                      <div className={`p-5 sm:p-6 bg-gradient-to-br ${userInfo.otpType === 'totp' ? 'from-blue-900/30 to-blue-800/20 border-blue-800' : 'from-purple-900/30 to-purple-800/20 border-purple-800'} border rounded-xl`}>
+                      <div className="flex items-start sm:items-center justify-between mb-4 gap-4">
                         <div>
                           <div className="text-sm font-medium text-gray-300 mb-1">OTP Type</div>
                           <div className="text-2xl font-bold text-white">
@@ -257,7 +257,7 @@ export default function SettingsPage() {
             </div>
 
             {/* Security Information Card */}
-            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-8 shadow-2xl">
+            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-5 sm:p-8 shadow-2xl">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-green-900/50 rounded-lg flex items-center justify-center">
                   <Lock className="w-6 h-6 text-green-400" />

@@ -111,14 +111,14 @@ export default function AboutPage() {
       {/* Navigation */}
       <nav className="border-b border-gray-800 bg-black/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex flex-wrap justify-between items-center gap-3 py-3 sm:h-16 sm:py-0">
             <Link href="/" className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center">
                 <Shield className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-semibold text-white">SecureAuth Pro</span>
+              <span className="text-base sm:text-xl font-semibold text-white">SecureAuth Pro</span>
             </Link>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <Link
                 href="/"
                 className="text-gray-400 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
@@ -140,33 +140,33 @@ export default function AboutPage() {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
         {/* Header */}
-        <div className="text-center mb-16 relative z-10">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
+        <div className="text-center mb-12 sm:mb-16 relative z-10">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
             Understanding OTP
           </h1>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+          <p className="text-base sm:text-xl text-gray-400 max-w-3xl mx-auto">
             Learn about Time-based (TOTP), Counter-based (HOTP), and advanced Challenge-Response authentication protocols
           </p>
         </div>
 
         {/* Live Demos Section */}
         <section className="mb-24 relative z-10">
-          <h2 className="text-3xl font-bold text-white mb-8 text-center">Live Demonstration</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-8 text-center">Live Demonstration</h2>
           
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             {/* TOTP Live Demo */}
             <div className="relative">
               <MagicCard
-                className="p-8"
+                className="p-4 sm:p-8"
                 gradientSize={350}
                 gradientFrom="#3b82f6"
                 gradientTo="#6366f1"
                 gradientColor="#1e293b"
                 gradientOpacity={0.15}
               >
-                <div className="bg-gray-900 rounded-xl p-8 relative z-10 border border-gray-800">
+                <div className="bg-gray-900 rounded-xl p-5 sm:p-8 relative z-10 border border-gray-800">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-12 h-12 bg-blue-900/50 rounded-lg flex items-center justify-center">
                       <Clock className="w-6 h-6 text-blue-400" />
@@ -178,7 +178,7 @@ export default function AboutPage() {
                   </div>
 
                   <div className="text-center py-6 bg-gray-800 rounded-xl mb-4">
-                    <div className="text-5xl font-mono font-bold text-white mb-4 tracking-wider">
+                    <div className="text-4xl sm:text-5xl font-mono font-bold text-white mb-4 tracking-wider break-all">
                       {totpLoading ? '------' : totpCode}
                     </div>
                     <div className="flex items-center justify-center gap-3">
@@ -213,14 +213,14 @@ export default function AboutPage() {
             {/* HOTP Live Demo */}
             <div className="relative">
               <MagicCard
-                className="p-8"
+                className="p-4 sm:p-8"
                 gradientSize={350}
                 gradientFrom="#6366f1"
                 gradientTo="#8b5cf6"
                 gradientColor="#1e293b"
                 gradientOpacity={0.15}
               >
-                <div className="bg-gray-900 rounded-xl p-8 relative z-10 border border-gray-800">
+                <div className="bg-gray-900 rounded-xl p-5 sm:p-8 relative z-10 border border-gray-800">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-12 h-12 bg-indigo-900/50 rounded-lg flex items-center justify-center">
                       <Hash className="w-6 h-6 text-indigo-400" />
@@ -232,7 +232,7 @@ export default function AboutPage() {
                   </div>
 
                   <div className="text-center py-6 bg-gray-800 rounded-xl mb-4">
-                    <div className="text-5xl font-mono font-bold text-white mb-4 tracking-wider">
+                    <div className="text-4xl sm:text-5xl font-mono font-bold text-white mb-4 tracking-wider break-all">
                       {hotpLoading ? '------' : hotpCode}
                     </div>
                     <div className="flex items-center justify-center gap-2 text-gray-300 mb-4">
@@ -267,14 +267,14 @@ export default function AboutPage() {
             {/* Challenge-Response Live Demo */}
             <div className="relative">
               <MagicCard
-                className="p-8"
+                className="p-4 sm:p-8"
                 gradientSize={350}
                 gradientFrom="#ea580c"
                 gradientTo="#dc2626"
                 gradientColor="#7f1d1d"
                 gradientOpacity={0.2}
               >
-                <div className="bg-gray-900 rounded-xl p-8 relative z-10 border border-gray-800">
+                <div className="bg-gray-900 rounded-xl p-5 sm:p-8 relative z-10 border border-gray-800">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-12 h-12 bg-orange-900/50 rounded-lg flex items-center justify-center">
                       <Shield className="w-6 h-6 text-orange-400" />
@@ -296,7 +296,7 @@ export default function AboutPage() {
                       <Clock className="w-5 h-5" />
                       <span className="text-lg">Expires in: <span className="font-semibold text-white">{formatTime(challengeExpiry)}</span></span>
                     </div>
-                    <div className="flex gap-2 justify-center">
+                    <div className="flex flex-col sm:flex-row gap-2 justify-center">
                       <button
                         onClick={generateNewChallenge}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium"
@@ -334,11 +334,11 @@ export default function AboutPage() {
 
         {/* Comparison Section */}
         <section className="mb-24 relative z-10">
-          <h2 className="text-3xl font-bold text-white mb-12 text-center">OTP Methods: Key Differences</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-12 text-center">OTP Methods: Key Differences</h2>
 
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             {/* TOTP Details */}
-            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-8 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-5 sm:p-8 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
               <ShineBorder
                 shineColor={["#3b82f6", "#6366f1"]}
                 duration={14}
@@ -406,7 +406,7 @@ export default function AboutPage() {
             </div>
 
             {/* HOTP Details */}
-            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-8 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-5 sm:p-8 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
               <ShineBorder
                 shineColor={["#6366f1", "#8b5cf6"]}
                 duration={14}
@@ -474,7 +474,7 @@ export default function AboutPage() {
             </div>
 
             {/* Challenge-Response Details */}
-            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-8 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-5 sm:p-8 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
               <ShineBorder
                 shineColor={["#ea580c", "#dc2626"]}
                 duration={14}
@@ -545,10 +545,11 @@ export default function AboutPage() {
 
         {/* Technical Comparison Table */}
         <section className="mb-24 relative z-10">
-          <h2 className="text-3xl font-bold text-white mb-12 text-center">Technical Comparison</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-12 text-center">Technical Comparison</h2>
 
           <div className="bg-gray-900 rounded-xl border border-gray-800 shadow-sm overflow-hidden">
-            <table className="w-full">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[760px]">
               <thead className="bg-gray-800 border-b border-gray-700">
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-white">Feature</th>
@@ -632,16 +633,17 @@ export default function AboutPage() {
                 </tr>
               </tbody>
             </table>
+            </div>
           </div>
         </section>
 
         {/* How It Works Section */}
         <section className="mb-24 relative z-10">
-          <h2 className="text-3xl font-bold text-white mb-12 text-center">How It Works</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-12 text-center">How It Works</h2>
 
           <div className="grid md:grid-cols-3 gap-6">
             {/* TOTP Process */}
-            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-8 shadow-sm">
+            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-5 sm:p-8 shadow-sm">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-blue-900/50 rounded-lg flex items-center justify-center">
                   <Clock className="w-6 h-6 text-blue-400" />
@@ -701,7 +703,7 @@ export default function AboutPage() {
             </div>
 
             {/* HOTP Process */}
-            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-8 shadow-sm">
+            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-5 sm:p-8 shadow-sm">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-indigo-900/50 rounded-lg flex items-center justify-center">
                   <Hash className="w-6 h-6 text-indigo-400" />
@@ -761,7 +763,7 @@ export default function AboutPage() {
             </div>
 
             {/* Challenge-Response Process */}
-            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-8 shadow-sm">
+            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-5 sm:p-8 shadow-sm">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-orange-900/50 rounded-lg flex items-center justify-center">
                   <Shield className="w-6 h-6 text-orange-400" />
@@ -824,9 +826,9 @@ export default function AboutPage() {
 
         {/* Security Features */}
         <section className="mb-24 relative z-10">
-          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-12 text-white">
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 sm:p-12 text-white">
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold mb-6 text-center">Security Features</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center">Security Features</h2>
               <p className="text-gray-300 mb-8 text-center text-lg">
                 All three protocols use industry-standard cryptography to ensure secure authentication
               </p>
@@ -856,7 +858,7 @@ export default function AboutPage() {
 
         {/* CTA Section */}
         <section className="text-center relative z-10">
-          <div className="bg-gradient-to-br from-gray-900 to-slate-900 rounded-2xl p-12 border border-gray-800 shadow-2xl">
+          <div className="bg-gradient-to-br from-gray-900 to-slate-900 rounded-2xl p-6 sm:p-12 border border-gray-800 shadow-2xl">
             <h2 className="text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-red-600">
               Ready to Get Started?
             </h2>

@@ -13,14 +13,14 @@ export default function Home() {
       {/* Navigation */}
       <nav className="border-b border-gray-800 bg-black/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex flex-wrap justify-between items-center gap-3 py-3 sm:h-16 sm:py-0">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center">
                 <Shield className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-semibold text-white">SecureAuth Pro</span>
+              <span className="text-base sm:text-xl font-semibold text-white">SecureAuth Pro</span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <Link
                 href="/about"
                 className="text-gray-400 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
@@ -49,9 +49,9 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 md:py-24">
         <div className="text-center max-w-3xl mx-auto">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
             Advanced Authentication
             <span className="block mt-2">
               <span className="text-gray-400">with </span>
@@ -70,7 +70,7 @@ export default function Home() {
               />
             </span>
           </h1>
-          <p className="text-xl text-gray-400 mb-8 leading-relaxed">
+          <p className="text-base sm:text-xl text-gray-400 mb-8 leading-relaxed">
             Professional multi-factor authentication system supporting TOTP, HOTP, and advanced Challenge-Response protocols.
             Enterprise-grade security for your applications.
           </p>
@@ -96,12 +96,12 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="bg-gray-900/50 py-24">
+      <section className="bg-gray-900/50 py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <TextAnimate
               as="h2"
-              className="text-3xl font-bold text-white mb-4"
+              className="text-2xl sm:text-3xl font-bold text-white mb-4"
               by="word"
               animation="blurInUp"
               startOnView={true}
@@ -118,7 +118,7 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {/* TOTP Card */}
-            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-8 shadow-2xl hover:shadow-blue-500/10 transition-shadow overflow-hidden">
+            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-6 sm:p-8 shadow-2xl hover:shadow-blue-500/10 transition-shadow overflow-hidden">
               <ShineBorder
                 shineColor={["#3b82f6", "#1d4ed8"]}
                 duration={14}
@@ -146,7 +146,7 @@ export default function Home() {
             </div>
 
             {/* HOTP Card */}
-            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-8 shadow-2xl hover:shadow-purple-500/10 transition-shadow overflow-hidden">
+            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-6 sm:p-8 shadow-2xl hover:shadow-purple-500/10 transition-shadow overflow-hidden">
               <ShineBorder
                 shineColor={["#8b5cf6", "#7c3aed"]}
                 duration={14}
@@ -174,7 +174,7 @@ export default function Home() {
             </div>
 
             {/* Challenge-Response Card */}
-            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-8 shadow-2xl hover:shadow-orange-500/10 transition-shadow overflow-hidden">
+            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-6 sm:p-8 shadow-2xl hover:shadow-orange-500/10 transition-shadow overflow-hidden">
               <ShineBorder
                 shineColor={["#ea580c", "#dc2626"]}
                 duration={14}
@@ -205,12 +205,12 @@ export default function Home() {
       </section>
 
       {/* Security Features */}
-      <section className="py-24">
+      <section className="py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-br from-red-900/20 to-gray-900 rounded-2xl p-12 text-white border border-red-900/30">
+          <div className="bg-gradient-to-br from-red-900/20 to-gray-900 rounded-2xl p-6 sm:p-12 text-white border border-red-900/30">
             <div className="max-w-3xl">
-              <h2 className="text-3xl font-bold mb-4 text-white">Enterprise-Grade Security</h2>
-              <p className="text-gray-300 mb-8 text-lg">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-white">Enterprise-Grade Security</h2>
+              <p className="text-gray-300 mb-8 text-base sm:text-lg">
                 Built with security best practices and industry standards
               </p>
               <div className="grid md:grid-cols-2 gap-6">

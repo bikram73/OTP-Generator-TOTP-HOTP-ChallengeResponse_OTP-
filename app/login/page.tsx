@@ -61,31 +61,31 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-black flex items-center justify-center px-4 py-8 sm:py-12">
       <div className="w-full max-w-lg">
         {/* Logo & Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 sm:mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-4">
             <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center">
               <Shield className="w-6 h-6 text-white" />
             </div>
             <span className="text-xl font-semibold text-white">SecureAuth Pro</span>
           </Link>
-          <h1 className="text-3xl font-bold text-white mb-2">Welcome back</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Welcome back</h1>
           <p className="text-gray-400">Sign in with your username or email to continue</p>
         </div>
 
         {/* Login Form */}
         <div className="relative">
           <MagicCard
-            className="p-8"
+            className="p-4 sm:p-8"
             gradientSize={300}
             gradientFrom="#dc2626"
             gradientTo="#b91c1c"
             gradientColor="#7f1d1d"
             gradientOpacity={0.2}
           >
-            <div className="bg-gray-900 rounded-xl p-8 relative z-10 border border-gray-800">
+            <div className="bg-gray-900 rounded-xl p-5 sm:p-8 relative z-10 border border-gray-800">
           {error && (
             <div className="mb-6 p-4 bg-red-900/20 border border-red-800 rounded-lg flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />

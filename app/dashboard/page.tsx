@@ -339,14 +339,14 @@ export default function DashboardPage() {
       {/* Navigation */}
       <nav className="bg-gray-900 border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex flex-wrap justify-between items-center gap-3 py-3 sm:h-16 sm:py-0">
             <Link href="/" className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center">
                 <Shield className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-semibold text-white">SecureAuth Pro</span>
+              <span className="text-base sm:text-xl font-semibold text-white">SecureAuth Pro</span>
             </Link>
-            <div className="flex items-center gap-3">
+            <div className="flex w-full sm:w-auto items-center justify-end gap-2 sm:gap-3">
               <Link
                 href="/dashboard/settings"
                 className="flex items-center gap-2 px-4 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors text-sm font-medium"
@@ -366,26 +366,26 @@ export default function DashboardPage() {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Dashboard</h1>
           <p className="text-gray-400">Generate and manage your one-time passwords</p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
           {/* OTP Display Card */}
           <div className="lg:col-span-2">
             <div className="relative">
               <MagicCard
-                className="p-8"
+                className="p-4 sm:p-8"
                 gradientSize={400}
                 gradientFrom="#dc2626"
                 gradientTo="#b91c1c"
                 gradientColor="#7f1d1d"
                 gradientOpacity={0.2}
               >
-                <div className="bg-gray-900 rounded-xl p-8 relative z-10 border border-gray-800">
-              <div className="flex items-center justify-between mb-6">
+                <div className="bg-gray-900 rounded-xl p-5 sm:p-8 relative z-10 border border-gray-800">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3">
                 <h2 className="text-xl font-semibold text-white">Current OTP Code</h2>
                 <button
                   onClick={generateOTP}
@@ -406,7 +406,7 @@ export default function DashboardPage() {
                         <span className="text-sm text-gray-400 font-medium">Challenge Code</span>
                       </div>
                       <div className="relative inline-block w-full">
-                        <div className="text-4xl md:text-5xl font-mono font-bold text-white p-4 bg-gray-800 rounded-lg border border-gray-700 text-center">
+                        <div className="text-2xl sm:text-4xl md:text-5xl font-mono font-bold text-white p-4 bg-gray-800 rounded-lg border border-gray-700 text-center break-all">
                           {challenge ? challenge.challenge : 'Click Generate to create challenge'}
                         </div>
                         {challenge && (
@@ -433,7 +433,7 @@ export default function DashboardPage() {
                           <span className="text-xs text-gray-500 block">Generated from combined string</span>
                         </div>
                         <div className="relative inline-block w-full">
-                          <div className="text-4xl md:text-5xl font-mono font-bold text-orange-400 p-4 bg-orange-900/20 rounded-lg border border-orange-800 text-center">
+                          <div className="text-2xl sm:text-4xl md:text-5xl font-mono font-bold text-orange-400 p-4 bg-orange-900/20 rounded-lg border border-orange-800 text-center break-all">
                             {challengeResponse}
                           </div>
                           <button
@@ -522,8 +522,8 @@ export default function DashboardPage() {
                     )}
                   </div>
                 ) : (
-                  <div className="relative inline-block">
-                    <div className="text-6xl md:text-7xl font-mono font-bold text-white mb-6 tracking-wider">
+                    <div className="relative inline-block max-w-full">
+                    <div className="text-4xl sm:text-6xl md:text-7xl font-mono font-bold text-white mb-6 tracking-[0.15em] sm:tracking-wider break-all">
                       {otp || '------'}
                     </div>
                     <button
@@ -589,7 +589,7 @@ export default function DashboardPage() {
                       </div>
                     )}
                     
-                    <div className="flex gap-3 justify-center">
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <button
                         onClick={generateChallenge}
                         disabled={loading}
@@ -638,7 +638,7 @@ export default function DashboardPage() {
 
           {/* Quick Actions */}
           <div className="space-y-6">
-            <div className="bg-gray-900 rounded-xl shadow-2xl border border-gray-800 p-6">
+            <div className="bg-gray-900 rounded-xl shadow-2xl border border-gray-800 p-5 sm:p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
               <div className="space-y-3">
                 <Link
@@ -717,7 +717,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Info Card */}
-            <div className="bg-red-900/20 border border-red-800 rounded-xl p-6">
+            <div className="bg-red-900/20 border border-red-800 rounded-xl p-5 sm:p-6">
               <div className="flex items-start gap-3">
                 <Shield className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                 <div>
@@ -748,7 +748,7 @@ export default function DashboardPage() {
 
         {/* How Challenge-Response Works */}
         {otpType === 'challenge-response' && showSteps && challenge && (
-          <div className="mt-8 bg-gray-900 rounded-xl p-8 border border-gray-800">
+          <div className="mt-8 bg-gray-900 rounded-xl p-5 sm:p-8 border border-gray-800">
             <h3 className="text-xl font-semibold text-white mb-6 text-center">How Challenge-Response Works</h3>
             
             <div className="grid md:grid-cols-2 gap-8">

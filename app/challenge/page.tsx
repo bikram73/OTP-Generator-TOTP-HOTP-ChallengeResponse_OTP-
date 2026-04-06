@@ -189,12 +189,12 @@ export default function ChallengePage() {
       {/* Navigation */}
       <nav className="bg-gray-900 border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex flex-wrap justify-between items-center gap-3 py-3 sm:h-16 sm:py-0">
             <Link href="/" className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center">
                 <Shield className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-semibold text-white">SecureAuth Pro</span>
+              <span className="hidden sm:inline text-xl font-semibold text-white">SecureAuth Pro</span>
             </Link>
             <Link
               href="/dashboard"
@@ -207,24 +207,24 @@ export default function ChallengePage() {
         </div>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Challenge-Response Authentication</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Challenge-Response Authentication</h1>
           <p className="text-gray-400">Generate challenges and verify responses for secure authentication</p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-6 sm:gap-8">
           {/* Challenge Generation */}
           <div className="relative">
             <MagicCard
-              className="p-8"
+              className="p-4 sm:p-8"
               gradientSize={400}
               gradientFrom="#dc2626"
               gradientTo="#b91c1c"
               gradientColor="#7f1d1d"
               gradientOpacity={0.2}
             >
-              <div className="bg-gray-900 rounded-xl p-8 relative z-10 border border-gray-800">
+              <div className="bg-gray-900 rounded-xl p-5 sm:p-8 relative z-10 border border-gray-800">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-12 h-12 bg-orange-900/50 rounded-lg flex items-center justify-center">
                     <AlertTriangle className="w-6 h-6 text-orange-400" />
@@ -327,14 +327,14 @@ export default function ChallengePage() {
             {qrCode && (
               <div className="relative">
                 <MagicCard
-                  className="p-8"
+                  className="p-4 sm:p-8"
                   gradientSize={400}
                   gradientFrom="#3b82f6"
                   gradientTo="#1d4ed8"
                   gradientColor="#1e40af"
                   gradientOpacity={0.2}
                 >
-                  <div className="bg-gray-900 rounded-xl p-8 relative z-10 border border-gray-800">
+                  <div className="bg-gray-900 rounded-xl p-5 sm:p-8 relative z-10 border border-gray-800">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="w-12 h-12 bg-blue-900/50 rounded-lg flex items-center justify-center">
                         <QrCode className="w-6 h-6 text-blue-400" />
@@ -362,14 +362,14 @@ export default function ChallengePage() {
             {challenge && (
               <div className="relative">
                 <MagicCard
-                  className="p-8"
+                  className="p-4 sm:p-8"
                   gradientSize={400}
                   gradientFrom="#10b981"
                   gradientTo="#059669"
                   gradientColor="#065f46"
                   gradientOpacity={0.2}
                 >
-                  <div className="bg-gray-900 rounded-xl p-8 relative z-10 border border-gray-800">
+                  <div className="bg-gray-900 rounded-xl p-5 sm:p-8 relative z-10 border border-gray-800">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="w-12 h-12 bg-green-900/50 rounded-lg flex items-center justify-center">
                         <CheckCircle2 className="w-6 h-6 text-green-400" />
@@ -441,7 +441,7 @@ export default function ChallengePage() {
         )}
 
         {/* Info Section */}
-        <div className="mt-12 bg-gray-900 rounded-xl p-8 border border-gray-800">
+        <div className="mt-12 bg-gray-900 rounded-xl p-5 sm:p-8 border border-gray-800">
           <h3 className="text-xl font-semibold text-white mb-4">How Challenge-Response Works</h3>
           <div className="grid md:grid-cols-2 gap-6 text-sm text-gray-400">
             <div>

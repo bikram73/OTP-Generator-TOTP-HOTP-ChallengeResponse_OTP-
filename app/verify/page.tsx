@@ -148,14 +148,14 @@ export default function VerifyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-black flex items-center justify-center px-4 py-8 sm:py-12">
       <div className="w-full max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 sm:mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-red-900/50 rounded-full mb-4">
             <Shield className="w-8 h-8 text-red-400" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
             Verify {otpType === 'totp' ? 'TOTP' : otpType === 'hotp' ? 'HOTP' : 'Challenge-Response'} Code
           </h1>
           <p className="text-gray-400">
@@ -204,14 +204,14 @@ export default function VerifyPage() {
         {/* Verification Form */}
         <div className="relative">
           <MagicCard
-            className="p-8"
+            className="p-4 sm:p-8"
             gradientSize={300}
             gradientFrom="#dc2626"
             gradientTo="#b91c1c"
             gradientColor="#7f1d1d"
             gradientOpacity={0.2}
           >
-            <div className="bg-gray-900 rounded-xl p-8 relative z-10 border border-gray-800">
+            <div className="bg-gray-900 rounded-xl p-5 sm:p-8 relative z-10 border border-gray-800">
           {message && (
             <div
               className={`mb-6 p-4 rounded-lg flex items-start gap-3 ${
@@ -258,7 +258,7 @@ export default function VerifyPage() {
                 suppressHydrationWarning
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                className="block w-full px-4 py-4 text-center text-3xl font-mono tracking-widest border-2 border-gray-700 bg-gray-800 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-white placeholder-gray-500"
+                className="block w-full px-3 sm:px-4 py-3 sm:py-4 text-center text-2xl sm:text-3xl font-mono tracking-[0.2em] sm:tracking-widest border-2 border-gray-700 bg-gray-800 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-white placeholder-gray-500"
                 placeholder="000000"
                 autoComplete="one-time-code"
               />

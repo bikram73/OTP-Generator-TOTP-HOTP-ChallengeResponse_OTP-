@@ -192,14 +192,14 @@ export default function QRCodePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-black flex items-center justify-center px-4 py-8 sm:py-12">
       <div className="w-full max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 sm:mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-red-900/50 rounded-full mb-4">
             <QrCode className="w-8 h-8 text-red-400" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
             {otpType === 'challenge-response' ? 'Challenge QR Code' : 'Setup QR Code'}
           </h1>
           <p className="text-gray-400">
@@ -213,14 +213,14 @@ export default function QRCodePage() {
         {/* QR Code Card */}
         <div className="relative">
           <MagicCard
-            className="p-8"
+            className="p-4 sm:p-8"
             gradientSize={400}
             gradientFrom="#dc2626"
             gradientTo="#b91c1c"
             gradientColor="#7f1d1d"
             gradientOpacity={0.2}
           >
-            <div className="bg-gray-900 rounded-xl p-8 relative z-10 border border-gray-800">
+            <div className="bg-gray-900 rounded-xl p-5 sm:p-8 relative z-10 border border-gray-800">
           {error && (
             <div className="mb-6 p-4 bg-red-900/20 border border-red-800 rounded-lg flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
@@ -237,7 +237,7 @@ export default function QRCodePage() {
                 <img
                   src={qrCode}
                   alt="QR Code"
-                  className="w-64 h-64"
+                  className="w-52 h-52 sm:w-64 sm:h-64"
                 />
               </div>
 
@@ -271,11 +271,11 @@ export default function QRCodePage() {
                     <img
                       src={qrCodeImage}
                       alt="Challenge QR Code"
-                      className="w-64 h-64"
+                      className="w-52 h-52 sm:w-64 sm:h-64"
                     />
                   </div>
                   
-                  <div className="flex gap-3 justify-center mb-6">
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
                     <button
                       onClick={downloadQRCode}
                       className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors text-sm font-medium"

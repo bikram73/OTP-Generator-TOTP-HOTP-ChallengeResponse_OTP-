@@ -254,10 +254,10 @@ export default function SettingsPage() {
                         Edit Profile
                       </button>
                     ) : (
-                      <div className="flex items-center gap-2">
+                      <div className="flex w-full sm:w-auto flex-col sm:flex-row gap-2">
                         <button
                           onClick={handleCancelEdit}
-                          className="inline-flex items-center gap-2 px-3 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm font-medium"
+                          className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-3 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm font-medium"
                         >
                           <X className="w-4 h-4" />
                           Cancel
@@ -265,7 +265,7 @@ export default function SettingsPage() {
                         <button
                           onClick={handleSaveProfile}
                           disabled={saving}
-                          className="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                          className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors text-sm font-medium"
                         >
                           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                           Save

@@ -355,14 +355,13 @@ export default function SettingsPage() {
             </div>
 
             {/* OTP Configuration Card */}
-            <div className="relative">
+            <div className="relative bg-gray-900 rounded-xl border border-gray-800 p-5 sm:p-8 shadow-2xl overflow-hidden">
               <ShineBorder
-                className="p-8 rounded-xl"
                 shineColor={userInfo.otpType === 'totp' ? ["#3b82f6", "#1d4ed8"] : ["#8b5cf6", "#7c3aed"]}
                 duration={14}
                 borderWidth={1}
-              >
-                <div className="bg-gray-900 rounded-xl p-8 border border-gray-800">
+              />
+              <div className="relative z-10">
                   <div className="flex items-center gap-3 mb-6">
                     <div className={`w-12 h-12 ${userInfo.otpType === 'totp' ? 'bg-blue-900/50' : 'bg-purple-900/50'} rounded-lg flex items-center justify-center`}>
                       {userInfo.otpType === 'totp' ? (
@@ -432,8 +431,7 @@ export default function SettingsPage() {
                       </div>
                     )}
                   </div>
-                </div>
-              </ShineBorder>
+              </div>
             </div>
 
             {/* Security Information Card */}
